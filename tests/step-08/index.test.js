@@ -33,23 +33,26 @@ test('Execute SQL Query', async () => {
 });
 
 test('Parse SQL Query with WHERE Clause', () => {
-    const query = 'SELECT id, name FROM student WHERE age = 25';
+    const query = 'SELECT student.name, enrollment.course FROM student INNER JOIN enrollment ON student.id=enrollment.student_id WHERE student.name = John';
     const parsed = parseQuery(query);
     expect(parsed).toEqual({
-        fields: ['id', 'name'],
-        table: 'student',
-        whereClauses: [{
-            "field": "age",
-            "operator": "=",
-            "value": "25",
-        }],
-        joinCondition: null,
-        joinTable: null
+            "fields": ["student.name", "enrollment.course"],
+            "table": "student",
+            "whereClauses": [{
+                "field": "student.name",
+                "operator": "=",
+                "value": "John"
+            }],
+            "joinTable": "enrollment",
+            "joinCondition": {
+                "left": "student.id",
+                "right": "enrollment.student_id"
+            }
     });
 });
 
 test('Execute SQL Query with WHERE Clause', async () => {
-    const query = 'SELECT id, name FROM student WHERE age = 25';
+    const query = 'SELECT student.name, enrollment.course FROM student INNER JOIN enrollment ON student.id=enrollment.student_id WHERE student.name = John';
     const result = await executeSELECTQuery(query);
     expect(result.length).toBe(1);
     expect(result[0]).toHaveProperty('id');
