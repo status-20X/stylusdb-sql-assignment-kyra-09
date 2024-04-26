@@ -37,7 +37,7 @@ const filteredData = whereClauses.length > 0
             // Assuming 'field' is just the column name without table prefix
             selectedRow[field] = row[field];
         } );
-        return selectedRow; })
+        return selectedRow; });
         
 }
 
