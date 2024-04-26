@@ -1,7 +1,5 @@
 // src/queryParser.js
 
-// src/queryParser.js
-
 function parseQuery(query) {
     // First, let's trim the query to remove any leading/trailing whitespaces
     query = query.trim();
@@ -17,7 +15,7 @@ function parseQuery(query) {
     const whereClause = whereSplit.length > 1 ? whereSplit[1].trim() : null;
 
     // Split the remaining query at the JOIN clause if it exists
-    const joinSplit = query.split(/\sINNER JOIN\s/i);
+    const joinSplit = query.split(/\sINNER JOIN\s|\sLEFT JOIN\s|\sRIGHT JOIN\s/i);
     selectPart = joinSplit[0].trim(); // Everything before JOIN clause
 
     // JOIN clause is the second part after splitting, if it exists
@@ -33,18 +31,19 @@ function parseQuery(query) {
     const [, fields, table] = selectMatch;
 
     // Parse the JOIN part if it exists
-    let joinTable = null, joinCondition = null;
+    let joinType = null, joinTable = null, joinCondition = null;
     if (joinPart) {
-        const joinRegex = /^(.+?)\sON\s([\w.]+)\s*=\s*([\w.]+)/i;
+        const joinRegex = /^(INNER|LEFT|RIGHT) JOIN\s(.+?)\sON\s([\w.]+)\s*=\s*([\w.]+)/i;
         const joinMatch = joinPart.match(joinRegex);
         if (!joinMatch) {
             throw new Error('Invalid JOIN format');
         }
 
-        joinTable = joinMatch[1].trim();
+        joinType = joinMatch[1].trim();
+        joinTable = joinMatch[2].trim();
         joinCondition = {
-            left: joinMatch[2].trim(),
-            right: joinMatch[3].trim()
+            left: joinMatch[3].trim(),
+            right: joinMatch[4].trim()
         };
     }
 
@@ -58,6 +57,7 @@ function parseQuery(query) {
         fields: fields.split(',').map(field => field.trim()),
         table: table.trim(),
         whereClauses,
+        joinType,
         joinTable,
         joinCondition
     };
