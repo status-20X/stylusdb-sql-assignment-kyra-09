@@ -1,6 +1,6 @@
 // src/queryParser.js
 
-function parseSelectQuery(query) {
+function parseQuery(query) {
     try {
 
         // Trim the query to remove any leading/trailing whitespaces
