@@ -8,7 +8,7 @@ async function executeSELECTQuery(query) {
     let data = await readCSV(`${table}.csv`);
 
     // Perform INNER JOIN if specified
-        if (joinTable && joinCondition) {
+    if (joinTable && joinCondition) {
         const joinData = await readCSV(`${joinTable}.csv`);
         data = data.flatMap(mainRow => {
             return joinData
@@ -25,20 +25,22 @@ async function executeSELECTQuery(query) {
                     }, {});
                 });
         });
-}
-    
-const filteredData = whereClauses.length > 0
-    ? data.filter(row => whereClauses.every(clause => evaluateCondition(row, clause)))
-    : data;
+    }
 
-    filteredData.map(row => {
+    const filteredData = whereClauses.length > 0
+        ? data.filter(row => whereClauses.every(clause => evaluateCondition(row, clause)))
+        : data;
+
+    return filteredData.map(row => {
         const selectedRow = {};
         fields.forEach(field => {
             // Assuming 'field' is just the column name without table prefix
             selectedRow[field] = row[field];
-        } );
-        return selectedRow; });
-        
+        });
+        return selectedRow;
+    });
 }
+
+module.exports = executeSELECTQuery;
 
 module.exports = executeSELECTQuery;
